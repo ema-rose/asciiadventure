@@ -52,6 +52,7 @@ namespace asciiadventure {
             if (other is Treasure){
                 //add the treasure to the chest
                 Player.Chest += 1;
+                Player.TLeft -=1;
                 other.Delete();
                 return "Yay, we got the treasure!";
             }
@@ -65,6 +66,7 @@ namespace asciiadventure {
 
             if(other is Nomnom) {
                 Player.Noms += 1;
+                Player.NomsLeft -=1;
                 other.Delete();
                 return "Yummy!";
             }

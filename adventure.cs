@@ -138,7 +138,7 @@ namespace asciiadventure {
                         // the monster got a Nomnom
                         Player.NomsLeft -= 1;
                         if(Player.NomsLeft < 2) {
-                            message += "Oh no! A Nomnom is gone and there aren't enough left for you!";
+                            message += "Oh no! A Nomnom is gone and there\naren't enough left for you!";
                             message += "\nGAME OVER  *෴ *\n\n";
                             gameOver = true;
                             break;
