@@ -12,13 +12,14 @@ using System.Collections.Generic;
 */
 namespace asciiadventure {
     public class Game {
+        Player player;
         private Random random = new Random();
         private static Boolean Eq(char c1, char c2){
             return c1.ToString().Equals(c2.ToString(), StringComparison.OrdinalIgnoreCase);
         }
 
         private static string Menu() {
-            return "WASD to move\nIJKL to attack/interact\nEnter command: ";
+            return "WASD to move\nIJKL to attack/interact\nQ to quit\n\nNomnoms: " + Player.Noms + "\nTreasure Chest: " + Player.Chest + "\n\nEnter command: \n";
         }
 
         private static void PrintScreen(Screen screen, string message, string menu) {
@@ -40,17 +41,37 @@ namespace asciiadventure {
             }
             
             // add a player
-            Player player = new Player(0, 0, screen, "Zelda");
+            player = new Player(0, 0, screen, "Zelda");
             
             // add a treasure
-            Treasure treasure = new Treasure(6, 2, screen);
+            Treasure treasure = new Treasure(5, 2, screen);
+            //set initial value left to 1
+            Player.TLeft = 1;
 
-            // add some mobs
-            List<Mob> mobs = new List<Mob>();
-            mobs.Add(new Mob(9, 9, screen));
+            //adding teleport
+            Teleport teleport1 = new Teleport(9, 0, screen);
+
+            //adding nomnoms
+            Nomnom nom1 = new Nomnom(8, 3, screen);
+            Nomnom nom2 = new Nomnom(6, 7, screen);
+            Nomnom nom3 = new Nomnom(2, 6, screen);
+            //set inital val left to 3
+            Player.NomsLeft = 3;
+
+
+            // add some monsters
+            List<Monster> mons = new List<Monster>();
+            mons.Add(new Monster(9, 9, screen));
             
             // initially print the game board
-            PrintScreen(screen, "Welcome!", Menu());
+            String setup = "Welcome!\nCollect at least 2 Nomnoms ✧ ";
+            setup += "and 1 Treasure 𓇽  to win.\nMake sure not to ";
+            setup += "let the monster get you or the items!\n\n";
+            setup += "Use the teleportation device Ⓞ  to travel\n";
+            setup += "from the bottom of the board to the top.\n";
+            setup += "And *one* more thing -- make sure not to ";
+            setup += "step\non items and squish them!\n\nGood luck ＞ᴗ＜";
+            PrintScreen(screen, setup, Menu());
             
             Boolean gameOver = false;
             
@@ -69,7 +90,10 @@ namespace asciiadventure {
                     player.Move(0, -1);
                 } else if (Eq(input, 'd')) {
                     player.Move(0, 1);
-                } else if (Eq(input, 'i')) {
+                } else if (Eq(input, ' ')) {
+                    //hop foward
+                    player.Move(-2, 0);
+                }else if (Eq(input, 'i')) {
                     message += player.Action(-1, 0) + "\n";
                 } else if (Eq(input, 'k')) {
                     message += player.Action(1, 0) + "\n";
@@ -84,23 +108,55 @@ namespace asciiadventure {
                     message = $"Unknown command: {input}";
                 }
 
-                // OK, now move the mobs
-                foreach (Mob mob in mobs){
-                    // TODO: Make mobs smarter, so they jump on the player, if it's possible to do so
-                    List<Tuple<int, int>> moves = screen.GetLegalMoves(mob.Row, mob.Col);
+                // OK, now move the monster
+                foreach (Monster mon in mons){
+                    // TODO: Make monsters smarter, so they jump on the player, if it's possible to do so
+                    List<Tuple<int, int>> moves = screen.GetLegalMoves(mon.Row, mon.Col);
                     if (moves.Count == 0){
                         continue;
                     }
-                    // mobs move randomly
+                    //monsters move randomly
                     var (deltaRow, deltaCol) = moves[random.Next(moves.Count)];
                     
-                    if (screen[mob.Row + deltaRow, mob.Col + deltaCol] is Player){
-                        // the mob got the player!
-                        mob.Token = "*";
-                        message += "A MOB GOT YOU! GAME OVER\n";
+                    if (screen[mon.Row + deltaRow, mon.Col + deltaCol] is Player){
+                        // the monster got the player!
+                        mon.Token = "💀";
+                        message += "Oh no! A monster got you *෴ *\nGAME OVER\n";
                         gameOver = true;
                     }
-                    mob.Move(deltaRow, deltaCol);
+                    else if (screen[mon.Row + deltaRow, mon.Col + deltaCol] is Treasure){
+                        // the monster got the Treasure
+                        Player.TLeft -= 1;
+                        if(Player.TLeft == 0) {
+                            message += "Oh no! The Treasure was stolen!";
+                            message += "\nGAME OVER  *෴ *\n\n";
+                            gameOver = true;
+                        }
+
+                    }
+                    else if (screen[mon.Row + deltaRow, mon.Col + deltaCol] is Nomnom){
+                        // the monster got a Nomnom
+                        Player.NomsLeft -= 1;
+                        if(Player.NomsLeft < 2) {
+                            message += "Oh no! A Nomnom is gone and there aren't enough left for you!";
+                            message += "\nGAME OVER  *෴ *\n\n";
+                            gameOver = true;
+                            break;
+                        }
+                        else {
+                            message += "Oh no! A Nomnom was eaten!";
+                            message += "\nThere are " + Player.NomsLeft + " remaining.";
+                        }
+                    }
+                    mon.Move(deltaRow, deltaCol);
+                }
+
+                //win game
+                if (Player.Noms == 2 && Player.Chest == 1) {
+                    message = "Great job; you won the game!\n\n~(‾▿‾~)(~‾▿‾)~";
+                    gameOver = true;
+                    PrintScreen(screen, message, "");
+                    break;
                 }
 
                 PrintScreen(screen, message, Menu());

@@ -95,13 +95,14 @@ namespace asciiadventure {
             // create walls if needed
             StringBuilder result = new StringBuilder();
             result.Append("+");
-            result.Append(String.Concat(Enumerable.Repeat("-", NumCols)));
+            result.Append(String.Concat(Enumerable.Repeat("-", NumCols + 10)));
             result.Append("+\n");
             for (int r=0; r < NumRows; r++){
                 result.Append('|');
                 for (int c=0; c < NumCols; c++){
                     GameObject gameObject = this[r, c];
                     if (gameObject == null){
+                        result.Append(' ');
                         result.Append(' ');
                     } else {
                         result.Append(gameObject.Token);
@@ -111,7 +112,7 @@ namespace asciiadventure {
                 result.Append("|\n");
             }
             result.Append('+');
-            result.Append(String.Concat(Enumerable.Repeat("-", NumRows)));
+            result.Append(String.Concat(Enumerable.Repeat("-", NumCols + 10)));
             result.Append('+');
             return result.ToString();
         }

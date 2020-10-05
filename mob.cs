@@ -1,7 +1,7 @@
 using System;
 
 namespace asciiadventure {
-    public class Mob : MovingGameObject {
-        public Mob(int row, int col, Screen screen) : base(row, col, "#", screen) {}
+    public class Monster : MovingGameObject {
+        public Monster(int row, int col, Screen screen) : base(row, col, "☿ ", screen) {}
     }
 }

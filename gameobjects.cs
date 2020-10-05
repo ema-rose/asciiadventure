@@ -78,13 +78,31 @@ namespace asciiadventure {
     }
 
     class Wall : GameObject {
-        public Wall(int row, int col, Screen screen) : base(row, col, "=", screen) {}
+        public Wall(int row, int col, Screen screen) : base(row, col, "==", screen) {}
     }
 
     class Treasure : GameObject {
-        public Treasure(int row, int col, Screen screen) : base(row, col, "T", screen) {}
+        public Treasure(int row, int col, Screen screen) : base(row, col, "𓇽 ", screen) {}
 
         public override Boolean IsPassable() {
+            return true;
+        }
+    }
+
+    
+    //adding a teleportation device
+    class Teleport : GameObject {
+        public Teleport(int row, int col, Screen screen) : base(row, col, "Ⓞ ", screen) {}
+
+        public override Boolean IsPassable() {
+            return true;
+        }
+    }
+
+    class Nomnom : GameObject {
+        public Nomnom(int row, int col, Screen screen) : base(row, col, "✧ ", screen) {}
+
+        public override bool IsPassable() {
             return true;
         }
     }
